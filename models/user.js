@@ -34,6 +34,7 @@ UserSchema.pre('save', function(next){
 });
 
 UserSchema.statics.authenticate = function(email, password, callback) {
+  console.log('in user.authenticate', email, password);
   User.findOne({email: email})
     .exec(function(err, user){
       if (err) {
@@ -45,6 +46,7 @@ UserSchema.statics.authenticate = function(email, password, callback) {
       }
       bcrypt.compare(password, user.password, function(err, result){
         if (result === true) {
+          console.log(user, 'authenticated');
           return callback(null, user);
         } else {
           return callback();

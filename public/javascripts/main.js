@@ -174,14 +174,13 @@ class _LoginForm extends React.Component {
         };
         fetch(url, {
             body: data,
-            method: 'POST'
+            method: 'POST',
+            credentials: 'same-origin'
         })
             .then(res => res.json())
             .then(data => {
                 if (data.success === true) {
                     this.props.setLoginStatus(true);
-                    console.log(this.props);
-                    console.log(data);
                 } else {
                     console.log('failed to login');
                 }
@@ -302,7 +301,6 @@ class _ChatInput extends React.Component {
         event.preventDefault();
         let message = document.getElementById('chatMessage').value;
         this.props.sendMessage(message);
-        console.log(message);
     }
 
     render() {
@@ -331,28 +329,11 @@ class _ChatInput extends React.Component {
     }
 }
 
-// class PageContainer extends React.Component {
-//     componentDidMount(){
-//         let iframe = ReactDOM.findDOMNode(this.refs.iframe);
-//         iframe.addEventListener('load', this.props.onLoad);
-//     }
-
-//     render() {
-//         return(
-//             <iframe
-//                 ref='iframe'
-//                 {...this.props}
-//                 frameBorder={'0'}
-//                 style={{
-//                     width: '100%',
-//                     height: '100%'
-//                 }}
-//             />
-//         )
-//     }
-// }
-
 class _SidePanel extends React.Component {
+
+    componentDidMount() {
+        this.props.setLoginStatus(loggedIn);
+    }
 
     render() {
         return(
@@ -374,6 +355,7 @@ class _SidePanel extends React.Component {
 }
 
 class App extends React.Component {
+    
     render() {
         return(
             <div style={{

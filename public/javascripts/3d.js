@@ -37,7 +37,7 @@ var camDirection = new THREE.Vector3();
 var camPosition = new THREE.Vector3();
 
 var skyGeometry, skyMaterial, sky;
-
+var testPanel = null;
 var userWorldInfo = {
     id: 0,
     position: [],
@@ -266,7 +266,7 @@ function init3D() {
         },
     ]);
 
-    var testPanel = createTextPanel(scene, 'testPanel', 20, 10, 'by CK', 0, GROUND_Y, 0);
+    testPanel = createTextPanel(scene, 'testPanel', 20, 10, 'by CK', 0, GROUND_Y, 0);
     
     // Initialize the renderer
     renderer = new THREE.WebGLRenderer({
@@ -362,6 +362,7 @@ function init3D() {
 
 function animate3D() {
     requestAnimationFrame(animate3D);
+    testPanel.rotation.y += 0.01;
     if (controlsEnabled === true) {
         raycaster.ray.origin.copy(controls.getObject().position);
         raycaster.ray.origin.y -= 10;
