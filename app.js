@@ -13,23 +13,19 @@ var MongoStore = require('connect-mongo')(session);
 
 var path = require('path');
 
-
 var logger = require('morgan');
-
 
 var app = express();
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'hbs');
 
-// app.use(logger('dev'));
-// app.use(express.json());
-// app.use(express.urlencoded({ extended: false }));
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({extended: true}));
+app.use(logger('dev'));
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(session({
   key: 'user_sid',
-  secret: 'somerandonstuffs',
+  secret: 'somerandomstuffs',
   resave: false,
   saveUninitialized: false,
   cookie: {
@@ -42,7 +38,6 @@ app.use(session({
 
 app.use(function(req, res, next) {
   if (req.cookies.user_sid && !req.session.user) {
-    console.log('cookies cleared');
     res.clearCookie('user_sid');
   }
   next();

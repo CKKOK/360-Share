@@ -36,6 +36,9 @@ var color = new THREE.Color();
 var camDirection = new THREE.Vector3();
 var camPosition = new THREE.Vector3();
 
+var mouse = new THREE.Vector2();
+var INTERSECTED = null;
+
 var skyGeometry, skyMaterial, sky;
 var testPanel = null;
 var userWorldInfo = {
@@ -357,12 +360,25 @@ function init3D() {
     };
     document.addEventListener('keydown', onKeyDown, false);
     document.addEventListener('keyup', onKeyUp, false);
+
+
+    // document.addEventListener('mousemove', onDocumentMouseMove, false);
+
     raycaster = new THREE.Raycaster(new THREE.Vector3(), new THREE.Vector3(0, -1, 0), 0, 10);
+    // raycaster = new THREE.Raycaster();
+}
+
+function onDocumentMouseMove(event) {
+    event.preventDefault();
+    mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+    mouse.y = (event.clientY / window.innerHeight) * 2 + 1;
 }
 
 function animate3D() {
     requestAnimationFrame(animate3D);
+    
     testPanel.rotation.y += 0.01;
+    
     if (controlsEnabled === true) {
         raycaster.ray.origin.copy(controls.getObject().position);
         raycaster.ray.origin.y -= 10;
@@ -388,7 +404,24 @@ function animate3D() {
             controls.getObject().position.y = 10;
             canJump = true;
         }
-    }
+    } else {
+        // raycaster.setFromCamera(mouse, camera);
+        // var intersects = raycaster.intersectObjects(scene.children);
+        
+        // if (intersects.length > 0) {
+        //     if (INTERSECTED != intersects[0].object) {
+        //         if (INTERSECTED) INTERSECTED.material.emissive.setHex(INTERSECTED.currentHex);
+        //         INTERSECTED = intersects[0].object;
+        //         INTERSECTED.currentHex = INTERSECTED.material.emissive.getHex();
+        //         INTERSECTED.material.emissive.setHex(0xff0000);
+        //     }
+        // } else {
+        //     if (INTERSECTED) INTERSECTED.material.emissive.setHex(INTERSECTED.currentHex);
+        //     INTERSECTED = null;
+        // };
+        // console.log(INTERSECTED);
+    };
+
     camera.getWorldDirection(camDirection);
     camera.getWorldPosition(camPosition);
     userWorldInfo.position = [camPosition.x, camPosition.y, camPosition.z]

@@ -1,12 +1,12 @@
 // Sockets
 const socket = io();
+let name = 'Anon: ';
 
 socket.on('chatMsg', function(chatPayload){
     store.dispatch(addText(chatPayload.payload))
 });
 
 socket.on('newImg', function(data){
-    console.log(data);
     updateSkyMaterial(data.newImg);
 })
 
@@ -49,7 +49,7 @@ const setOutgoing = function(text) {
 const sendMessage = function(message) {
     return {
         type: SEND_MESSAGE,
-        payload: message
+        payload: name + message
     }
 }
 
@@ -77,7 +77,7 @@ const rootReducer = function(state = initState, action) {
         case SET_OUTGOING_TEXT:
             return {...state, outgoing: action.payload};
         case SEND_MESSAGE:
-            socket.emit('chatMsg', {id: socket.id, payload: state.outgoing});
+            socket.emit('chatMsg', {id: socket.id, payload: name + state.outgoing});
             return {...state, outgoing: ''};
         case SET_LOGGED_IN:
             return {...state, loggedIn: action.payload};
@@ -140,11 +140,11 @@ class UploadPanel extends React.Component {
     render() {
         return(
             <div className='container'>
-            <h2>Share a 360 scene!</h2>
+            <h2 style={{textAlign:'center'}}>Share a 360 scene!</h2>
             <hr/>
                 <form className='ajax-form' onSubmit={this.handleUpload}>
                     <div className='form-group'>
-                        <input type='file' name='photo' id='fileUpload' />
+                        <input type='file' name='photo' id='fileUpload' className='btn ajax-button btn-lg btn-block' />
                         <button className='btn ajax-button btn-dark btn-lg btn-block' type='submit'>
                             <span id='upload-btn-text' className='button-text'>Upload</span>
                         </button>
@@ -180,6 +180,7 @@ class _LoginForm extends React.Component {
             .then(res => res.json())
             .then(data => {
                 if (data.success === true) {
+                    name = data.name + ': ';
                     this.props.setLoginStatus(true);
                 } else {
                     console.log('failed to login');
@@ -246,6 +247,18 @@ class _ChatPanel extends React.Component {
         let text = this.props.text;
         return {__html: text} 
     }
+
+    toggleFlyout(event) {
+        let targetId = event.target.getAttribute('id');
+        if (targetId === 'chatMessage' || targetId === 'chat-form' || targetId === 'chat-btn' || targetId === 'chat-btn-content' ) {return};
+        let panel = document.querySelector('.chat-panel');
+        if (panel.style.bottom == '-420px') {
+            panel.style.bottom = '0';
+        } else {
+            panel.style.bottom = '-420px';
+        };
+    }
+
     render() {
         return(
             <div className='chat-panel' style={{
@@ -254,10 +267,11 @@ class _ChatPanel extends React.Component {
                 width: '300px',
                 height: '450px',
                 position: 'fixed',
-                bottom: '0',
+                bottom: '-420px',
                 right: '300px',
-                borderRadius: '8px'
-            }}>
+                borderRadius: '8px',
+                transition: 'all 0.5s',
+            }} onClick={this.toggleFlyout} >
                 <div className='chat-container' style={{
                     position: 'relative',
                     width: '100%',
@@ -300,7 +314,8 @@ class _ChatInput extends React.Component {
     handleSubmit(event) {
         event.preventDefault();
         let message = document.getElementById('chatMessage').value;
-        this.props.sendMessage(message);
+        console.log(name + message);
+        this.props.sendMessage(name + message);
     }
 
     render() {
@@ -313,15 +328,15 @@ class _ChatInput extends React.Component {
                 borderBottomRightRadius: '8px',
                 width: '100%'
             }}>
-                <form onSubmit={this.handleSubmit}>
+                <form id='chat-form' onSubmit={this.handleSubmit}>
                     <input type='text' onChange={this.handleChange} value={this.props.outgoing} name='chatMessage' id='chatMessage' style={{
                         width: '80%', 
                         height:'1.5em',
                         display: 'inline-block',
                         marginLeft: '10px',
                         }}/>
-                    <button className='btn btn-sm btn-primary' type='submit' style={{marginLeft:'16px'}}>
-                        <span className='button-text'>+</span>
+                    <button className='btn btn-sm btn-primary' type='submit' id='chat-btn' style={{marginLeft:'16px'}}>
+                        <span className='button-text' id='chat-btn-content'>+</span>
                     </button>
                 </form>
             </div>
